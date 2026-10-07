@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live Draw</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans+KR:wght@400;700&display=swap" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="assets/logo.png" alt="glyph universe" onerror="this.hidden = true; this.nextElementSibling.hidden = false" />
+      <span hidden>glyph universe</span>
+    </div>
+    <div class="topbar-right">
+      <nav class="steps">
+        <span class="step-dot" data-step="1">1 Upload</span>
+        <span class="step-dot" data-step="2">2 Draw · Wheel</span>
+        <span class="step-dot" data-step="3">3 Results</span>
+      </nav>
+      <button id="soundBtn" class="sound-btn" type="button"></button>
+    </div>
+  </header>
+
+  <!-- STEP 1: upload screenshots + extract names -->
+  <main id="step1" class="screen">
+    <section class="panel upload-panel">
+      <h2>Upload comment screenshots</h2>
+      <label id="dropzone" class="dropzone">
+        <input id="fileInput" type="file" accept="image/*" multiple hidden />
+        <div class="dz-big">📸</div>
+        <div>Drop screenshots here or click to choose</div>
+        <div class="muted">You can also paste with <kbd>⌘/Ctrl</kbd> + <kbd>V</kbd> · multiple images OK</div>
+      </label>
+      <div id="thumbs" class="thumbs"></div>
+      <div class="row">
+        <button id="ocrBtn" class="btn primary" disabled>Extract names</button>
+        <div id="ocrStatus" class="muted"></div>
+      </div>
+      <div class="progress"><div id="ocrBar" class="progress-bar"></div></div>
+    </section>
+
+    <section class="panel review-panel">
+      <h2>Participants <span id="s1Count" class="count">0</span></h2>
+      <p class="muted">@handles are added automatically. Add anyone missing below, or click a recognized text line to edit and add it.</p>
+      <form id="s1AddForm" class="add-form">
+        <input id="s1AddInput" type="text" placeholder="Type a name and press Enter" autocomplete="off" />
+        <button class="btn" type="submit">Add</button>
+      </form>
+      <div id="s1List" class="chips"></div>
+      <details id="rawWrap" class="raw-wrap" hidden>
+        <summary>Show all recognized text lines</summary>
+        <div id="rawLines" class="chips raw"></div>
+      </details>
+      <div class="row end">
+        <button id="toStep2" class="btn primary big" disabled>Next →</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- STEP 2: list | draw | item wheel -->
+  <main id="step2" class="screen three" hidden>
+    <section class="panel col">
+      <h2>Participants <span id="s2Count" class="count">0</span></h2>
+      <form id="s2AddForm" class="add-form">
+        <input id="s2AddInput" type="text" placeholder="Add a name" autocomplete="off" />
+        <button class="btn" type="submit">+</button>
+      </form>
+      <ol id="s2List" class="name-list"></ol>
+      <button id="backTo1" class="btn ghost">← Back to upload</button>
+    </section>
+
+    <section class="panel col">
+      <h2>Draw</h2>
+      <div class="draw-controls">
+        <label for="drawCount">How many?</label>
+        <input id="drawCount" type="number" min="1" value="3" />
+        <button id="drawBtn" class="btn primary">Draw!</button>
+      </div>
+      <div id="slot" class="slot"><span id="slotText">READY</span></div>
+      <ol id="winnerList" class="winner-list"></ol>
+    </section>
+
+    <section class="panel col">
+      <h2>Item Wheel</h2>
+      <textarea id="itemsInput" rows="3" placeholder="One item per line"></textarea>
+      <label class="check"><input id="removeWon" type="checkbox" checked /> Remove won items from the wheel</label>
+      <div class="wheel-wrap">
+        <canvas id="wheel" width="420" height="420"></canvas>
+      </div>
+      <div id="turnLabel" class="turn">Draw winners first</div>
+      <button id="spinBtn" class="btn primary big" disabled>Spin</button>
+      <button id="toStep3" class="btn primary big" hidden>Show results →</button>
+    </section>
+  </main>
+
+  <!-- STEP 3: results -->
+  <main id="step3" class="screen" hidden>
+    <div class="result">
+      <h1 class="result-title">🎉 Congratulations! 🎉</h1>
+      <div id="resultGrid" class="result-grid"></div>
+      <div class="row center">
+        <button id="backTo2" class="btn ghost">← Back to draw</button>
+        <button id="restart" class="btn">Start over</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
